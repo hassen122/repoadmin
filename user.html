@@ -2,57 +2,164 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>بحوث الترابية </title>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #fafafa; margin: 0; direction: rtl; color: #333; }
-        .header { background: linear-gradient(135deg, #34495e, #8b5b29); color: white; padding: 40px 20px; text-align: center; max-height: 150px; border: 5px solid white; font-weight: bolder; }
-        .header h1{ transform: translateY(-80%); }
-        .header p{ font-size: 15px; padding: 20px; transform: translateY(-35%); background:#fafafa; color: green; border-radius: 20px; }
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: radial-gradient(circle at center, #2c5364, #203a43, #0f2027); 
+            margin: 0; 
+            direction: rtl; 
+            color: white; 
+            min-height: 100vh;
+            background-attachment: fixed;
+        }
+
+        /* الهيدر المطور */
+        .header { 
+            display: flex;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.05); 
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 30px 20px; 
+            border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 25px;
+        }
+
+        .home-btn {
+            background: rgba(212, 175, 55, 0.15);
+            color: #d4af37;
+            border: 1px solid #d4af37;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        /* شريط البحث العلوي - ثابت وصغير لتجنب مشاكل اللمس */
+        .inner-search { 
+            width: 110px; 
+            padding: 8px 30px 8px 10px;
+            border-radius: 15px; 
+            border: 1px solid rgba(255, 255, 255, 0.3); 
+            background: rgba(255, 255, 255, 0.1) url('https://cdn-icons-png.flaticon.com/512/622/622669.png') no-repeat right 10px center;
+            background-size: 14px;
+            color: white;
+            font-size: 0.8rem; 
+            outline: none; 
+        }
+
+        /* حاوية النص الشريف */
+        .quote-box {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px dashed rgba(212, 175, 55, 0.4);
+            position: relative;
+        }
+
+        .quote-text {
+            margin: 0;
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #fff;
+            font-style: italic;
+        }
+
+        .quran-text {
+            margin: 15px 0 0 0;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #d4af37;
+            text-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+        }
+
         .cat-list { display: flex; flex-direction: column; align-items: center; padding: 25px; gap: 15px; }
-        .btn-cat { width: 100%; max-width: 450px; padding: 20px; background: white; border: 2px solid #8b5b29; color: #8b5b29; border-radius: 12px; font-size: 1.2rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.2s; }
-        .btn-cat:active { transform: translateY(2px); }
-        /* واجهة البحث (داخل القسم) */
-        .res-view { width: 80%; max-width: 650px; margin: 0 auto; display: none; padding-bottom: 40px; }
-        .search-box-wrapper { position: sticky; top: 10px; z-index: 100; margin-bottom: 20px; }
-        .inner-search { width: 100%; padding: 15px 45px 15px 15px; border-radius: 30px; border: 2px solid #8b5b29; font-size: 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); outline: none; }
-        .search-icon-inside { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 1.2rem; }
-        .card { padding: 25px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; border-right: 5px solid black; transition: 0.3s; transform: translate(-10%); }
-        .card h3 { color: black; font-size: 1rem; font-weight: bolder; margin-top: 0; border-bottom: 5px solid black; padding-bottom: 10px; }
-        .card p { font-size: 1rem; line-height: 1.8; white-space: pre-wrap; }
-        .highlight { background: #ffeb3b; padding: 0 2px; border-radius: 3px; }
-        .back-btn { background: #444; color: white; border: none; padding: 10px 20px; border-radius: 8px; margin: 15px 0; cursor: pointer; }
+
+        .btn-cat { 
+            width: 100%; 
+            max-width: 400px; 
+            padding: 18px; 
+            background: rgba(255, 255, 255, 0.05); 
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            color: #d4af37; 
+            border-radius: 15px; 
+            font-size: 1.1rem; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: 0.2s; 
+        }
+
+        .btn-cat:active { transform: scale(0.98); background: rgba(255, 255, 255, 0.1); }
+
+        .res-view { width: 92%; max-width: 700px; margin: 0 auto; display: none; padding-bottom: 40px; }
+
+        .card { 
+            padding: 20px; 
+            border-radius: 15px; 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 15px; 
+        }
+
+        .card h3 { color: #d4af37; font-size: 1rem; border-bottom: 1px solid rgba(212, 175, 55, 0.2); padding-bottom: 8px; margin-top: 0; }
+        .card p { font-size: 0.95rem; line-height: 1.7; color: #eee; margin-bottom: 0; white-space: pre-wrap; }
+        
+        .highlight { background: rgba(212, 175, 55, 0.4); color: white; padding: 0 2px; border-radius: 3px; }
+        .back-btn { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 10px; margin: 15px 0; cursor: pointer; font-size: 0.85rem; }
     </style>
 </head>
 <body>
 
 <div class="header" id="mainH">
-    <h1> بحوث الترابية</h1>
-    
-    <p>. أبي عبد الله عليه السلام قال: لوددت أن أصحابي ضربت رؤوسهم بالسياط حتى يتفقهوا
-        <br><br> لَذِكْرَى لِمَنْ كَانَ لَهُ قَلْبٌ
-    </p>
+    <div class="header-top">
+        <a class="home-btn" href="index.html">🏠 الرئيسية</a>
+        <h2 style="margin:0; font-size: 1.1rem; color: #d4af37;">بحوث الترابية</h2>
+        <input type="text" id="mainSearch" class="inner-search" placeholder="بحث..." oninput="init()">
+    </div>
+
+    <div class="quote-box">
+        <p class="quote-text">
+            أبي عبد الله عليه السلام قال: لوددت أن أصحابي ضربت رؤوسهم بالسياط حتى يتفقهوا
+        </p>
+        <div style="margin: 12px auto; height: 1px; width: 50%; background: linear-gradient(90deg, transparent, #d4af37, transparent);"></div>
+        <p class="quran-text">لَذِكْرَى لِمَنْ كَانَ لَهُ قَلْبٌ</p>
+    </div>
 </div>
 
 <div id="view1" class="cat-list">
-    <p style="color:#8b5b29;">جارِ تحميل البحوث...</p>
+    <p>جارِ تحميل البحوث...</p>
 </div>
 
 <div id="view2" class="res-view">
     <button class="back-btn" onclick="showV1()">🔙 العودة للأقسام</button>
     
-    <div class="search-box-wrapper">
-        <span class="search-icon-inside">🔍</span>
-        <input type="text" id="innerSearch" class="inner-search" placeholder="  بحث الترابية 🔎 ">
+    <div style="text-align: center; margin-bottom: 20px;">
+        <input type="text" id="innerSearch" 
+               style="width:220px; padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,0.2); background:rgba(0,0,0,0.3); color:white; outline:none; font-size: 0.85rem;" 
+               placeholder="🔍 بحث الترابية   ...">
     </div>
 
     <div id="output"></div>
 </div>
 
 <script>
-    // 2. إعدادات Firebase (نفس التي في الأدمن)
     const firebaseConfig = {
         apiKey: "AIzaSyA3Qp8zzy6FIs1g5ed0HXBkd9FykxGvGR8",
         authDomain: "alturbya.firebaseapp.com",
@@ -62,56 +169,49 @@
         appId: "1:481479317412:web:8f070dbc4c87ba5aa59331"
     };
 
-    // تهيئة Firebase
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const firestore = firebase.firestore();
 
-    // متغير لتخزين البيانات القادمة من السحاب
     let dbData = {}; 
     let currentCategory = "";
 
-    // 3. جلب البيانات من السحاب لحظياً
+    // دالة البحث الذكي: تتجاهل التشكيل والهمزات
+    function normalizeArabic(text) {
+        if (!text) return "";
+        return text
+            .replace(/[\u064B-\u0652]/g, "") 
+            .replace(/[أآإ]/g, "ا")           
+            .replace(/ة/g, "ه")              
+            .replace(/ى/g, "ي")              
+            .toLowerCase().trim();
+    }
+
     firestore.collection("researches").onSnapshot((snapshot) => {
-        // تفريغ البيانات القديمة وإعادة بنائها
         let tempDB = {};
-        
         snapshot.forEach(doc => {
             const item = doc.data();
             const cat = item.category || "عام";
-            
-            // تجميع البحوث حسب اسم القسم
             if (!tempDB[cat]) tempDB[cat] = [];
             tempDB[cat].push(item);
         });
-
-        dbData = tempDB; // تحديث المتغير الرئيسي
-        init(); // إعادة رسم الأقسام
-
-        // إذا كان المستخدم داخل قسم معين، نقوم بتحديث محتواه أيضاً
+        dbData = tempDB;
+        init();
         if (currentCategory && document.getElementById('view2').style.display === 'block') {
             renderResearches(dbData[currentCategory] || []);
         }
-    }, (error) => {
-        console.error("Error getting data: ", error);
-        document.getElementById('view1').innerHTML = '<p>حدث خطأ في الاتصال بالسحاب</p>';
     });
 
     function init() {
         const v1 = document.getElementById('view1'); 
         v1.innerHTML = '';
         const keys = Object.keys(dbData);
+        const filter = normalizeArabic(document.getElementById('mainSearch').value);
         
-        if(keys.length === 0) {
-            v1.innerHTML = '<p>المكتبة فارغة حالياً</p>';
-            return;
-        }
-
         keys.forEach(c => {
+            if (filter && !normalizeArabic(c).includes(filter)) return;
             const b = document.createElement('button');
             b.className = 'btn-cat';
-            b.innerText = " " + c;
+            b.innerText = c;
             b.onclick = () => showV2(c);
             v1.appendChild(b);
         });
@@ -129,23 +229,27 @@
 
     function renderResearches(data, term = "") {
         const out = document.getElementById('output');
-        out.innerHTML = `<h2 style="color:#8b5b29; text-align:center;">${currentCategory}</h2>`;
+        out.innerHTML = `<h2 style="color:#d4af37; text-align:center; font-size: 1.3rem; margin-bottom: 20px;">${currentCategory}</h2>`;
         
         if (!data) return;
+        const cleanTerm = normalizeArabic(term);
 
         data.forEach(r => {
-            if(term && !r.t.includes(term) && !r.x.includes(term)) return;
+            const cleanTitle = normalizeArabic(r.t);
+            const cleanText = normalizeArabic(r.x);
+
+            if(cleanTerm && !cleanTitle.includes(cleanTerm) && !cleanText.includes(cleanTerm)) return;
             
-            let text = r.x;
-            if(term) {
-                const reg = new RegExp(`(${term})`, "gi");
-                text = text.replace(reg, '<span class="highlight">$1</span>');
+            let displayText = r.x;
+            if(term && term.length > 1) {
+                const reg = new RegExp(`(${term.split('').join('[\\u064B-\\u0652]*')})`, "gi");
+                displayText = displayText.replace(reg, '<span class="highlight">$1</span>');
             }
 
             out.innerHTML += `
-                <div class="card" style="background-color: ${r.color || '#ffffff'}">
+                <div class="card">
                     <h3>${r.t}</h3>
-                    <p>${text}</p>
+                    <p>${displayText}</p>
                 </div>`;
         });
     }
@@ -156,9 +260,9 @@
 
     function showV1() {
         document.getElementById('view1').style.display = 'flex';
-        document.getElementById('mainH').style.display = 'block';
+        document.getElementById('mainH').style.display = 'flex';
         document.getElementById('view2').style.display = 'none';
     }
 </script>
 </body>
-</html>
+            </html>
